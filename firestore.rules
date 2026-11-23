@@ -1,0 +1,331 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Master safety net — deny everything by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string
+        && id.size() >= 4
+        && id.size() <= 128
+        && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidUserProfile(data, pathUserId) {
+      return data.keys().hasAll([
+          'userId',
+          'fullName',
+          'email',
+          'phoneNumber',
+          'address',
+          'city',
+          'state',
+          'postcode',
+          'defaultRegion',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'userId',
+          'fullName',
+          'email',
+          'phoneNumber',
+          'address',
+          'city',
+          'state',
+          'postcode',
+          'defaultRegion',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.userId is string
+        && data.userId == pathUserId
+        && isValidId(data.userId)
+        && data.fullName is string
+        && data.fullName.size() >= 2
+        && data.fullName.size() <= 120
+        && data.email is string
+        && data.email.size() >= 5
+        && data.email.size() <= 160
+        && data.phoneNumber is string
+        && data.phoneNumber.size() <= 30
+        && data.address is string
+        && data.address.size() <= 300
+        && data.city is string
+        && data.city.size() <= 80
+        && data.state is string
+        && data.state.size() <= 60
+        && data.postcode is string
+        && data.postcode.size() <= 10
+        && data.defaultRegion is string
+        && data.defaultRegion in ['semenanjung', 'sabah_sarawak']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidOrder(data, pathOrderId) {
+      return data.keys().hasAll([
+          'orderId',
+          'reference',
+          'userId',
+          'isGuest',
+          'customerName',
+          'customerPhone',
+          'customerEmail',
+          'address',
+          'city',
+          'state',
+          'postcode',
+          'shippingRegion',
+          'paymentMethod',
+          'paymentStatus',
+          'orderStatus',
+          'items',
+          'totalPackages',
+          'totalPaidBottles',
+          'totalFreeBottles',
+          'totalBottles',
+          'totalTablets',
+          'subtotal',
+          'shippingFee',
+          'grandTotal',
+          'hasReceipt',
+          'receiptFileName',
+          'receiptPreviewDataUrl',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'orderId',
+          'reference',
+          'userId',
+          'isGuest',
+          'customerName',
+          'customerPhone',
+          'customerEmail',
+          'address',
+          'city',
+          'state',
+          'postcode',
+          'shippingRegion',
+          'paymentMethod',
+          'paymentStatus',
+          'orderStatus',
+          'items',
+          'totalPackages',
+          'totalPaidBottles',
+          'totalFreeBottles',
+          'totalBottles',
+          'totalTablets',
+          'subtotal',
+          'shippingFee',
+          'grandTotal',
+          'hasReceipt',
+          'receiptFileName',
+          'receiptPreviewDataUrl',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.orderId is string
+        && data.orderId == pathOrderId
+        && isValidId(data.orderId)
+        && data.reference is string
+        && data.reference.size() >= 6
+        && data.reference.size() <= 40
+        && data.userId is string
+        && data.userId.size() >= 4
+        && data.userId.size() <= 128
+        && data.isGuest is bool
+        && data.customerName is string
+        && data.customerName.size() >= 2
+        && data.customerName.size() <= 120
+        && data.customerPhone is string
+        && data.customerPhone.size() >= 8
+        && data.customerPhone.size() <= 30
+        && data.customerEmail is string
+        && data.customerEmail.size() >= 5
+        && data.customerEmail.size() <= 160
+        && data.address is string
+        && data.address.size() >= 5
+        && data.address.size() <= 300
+        && data.city is string
+        && data.city.size() >= 2
+        && data.city.size() <= 80
+        && data.state is string
+        && data.state.size() >= 2
+        && data.state.size() <= 60
+        && data.postcode is string
+        && data.postcode.matches('^\\d{5}$')
+        && data.shippingRegion is string
+        && data.shippingRegion in ['semenanjung', 'sabah_sarawak']
+        && data.paymentMethod is string
+        && data.paymentMethod in ['online_transfer', 'cod']
+        && data.paymentStatus is string
+        && data.paymentStatus in ['PENDING VERIFICATION', 'UNPAID (COD)', 'VERIFIED', 'CANCELLED']
+        && data.orderStatus is string
+        && data.orderStatus in ['Pending Payment', 'Pending Verification', 'Processing', 'Shipped', 'Completed', 'Cancelled']
+        && data.items is list
+        && data.items.size() >= 1
+        && data.items.size() <= 10
+        && data.items[0] is map
+        && data.totalPackages is int
+        && data.totalPackages >= 1
+        && data.totalPackages <= 60
+        && data.totalPaidBottles is int
+        && data.totalPaidBottles >= 1
+        && data.totalPaidBottles <= 200
+        && data.totalFreeBottles is int
+        && data.totalFreeBottles >= 0
+        && data.totalFreeBottles <= 100
+        && data.totalBottles is int
+        && data.totalBottles == data.totalPaidBottles + data.totalFreeBottles
+        && data.totalTablets is int
+        && data.totalTablets == data.totalBottles * 30
+        && data.subtotal is number
+        && data.subtotal >= 59
+        && data.shippingFee is number
+        && data.shippingFee in [8, 10, 17]
+        && data.grandTotal is number
+        && data.grandTotal == data.subtotal + data.shippingFee
+        && data.hasReceipt is bool
+        && data.receiptFileName is string
+        && data.receiptFileName.size() <= 160
+        && data.receiptPreviewDataUrl is string
+        && data.receiptPreviewDataUrl.size() <= 350000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidShippingAndPaymentCombo(data) {
+      return (
+        (data.shippingRegion == 'semenanjung' && data.paymentMethod == 'online_transfer' && data.shippingFee == 8)
+        || (data.shippingRegion == 'sabah_sarawak' && data.paymentMethod == 'online_transfer' && data.shippingFee == 10)
+        || (data.shippingRegion == 'semenanjung' && data.paymentMethod == 'cod' && data.shippingFee == 10)
+        || (data.shippingRegion == 'sabah_sarawak' && data.paymentMethod == 'cod' && data.shippingFee == 17)
+      );
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn()
+        && isOwner(userId)
+        && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isSignedIn()
+        && isOwner(userId)
+        && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().userId == existing().userId
+        && incoming().email == existing().email
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'fullName',
+          'phoneNumber',
+          'address',
+          'city',
+          'state',
+          'postcode',
+          'defaultRegion',
+          'updatedAt'
+        ]);
+
+      allow delete: if false;
+    }
+
+    match /orders/{orderId} {
+      allow get: if isSignedIn()
+        && isValidId(orderId)
+        && existing().userId == request.auth.uid;
+
+      allow list: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+
+      allow create: if isValidId(orderId)
+        && isValidOrder(incoming(), orderId)
+        && isValidShippingAndPaymentCombo(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && (
+          (incoming().paymentMethod == 'online_transfer'
+            && incoming().hasReceipt == true
+            && incoming().receiptFileName.size() >= 1
+            && incoming().paymentStatus == 'PENDING VERIFICATION'
+            && incoming().orderStatus == 'Pending Verification')
+          || (incoming().paymentMethod == 'cod'
+            && incoming().paymentStatus == 'UNPAID (COD)'
+            && incoming().orderStatus == 'Processing')
+        )
+        && (
+          (isSignedIn() && incoming().userId == request.auth.uid && incoming().isGuest == false)
+          || (!isSignedIn() && incoming().userId == 'guest' && incoming().isGuest == true)
+        );
+
+      allow update: if isSignedIn()
+        && isValidId(orderId)
+        && isValidOrder(incoming(), orderId)
+        && existing().userId == request.auth.uid
+        && existing().orderStatus != 'Completed'
+        && existing().orderStatus != 'Cancelled'
+        && incoming().orderId == existing().orderId
+        && incoming().reference == existing().reference
+        && incoming().userId == existing().userId
+        && incoming().isGuest == existing().isGuest
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Customer uploads replacement payment proof for pending online transfer
+          (existing().paymentMethod == 'online_transfer'
+            && existing().orderStatus in ['Pending Payment', 'Pending Verification']
+            && incoming().hasReceipt == true
+            && incoming().receiptFileName.size() >= 1
+            && incoming().paymentStatus == 'PENDING VERIFICATION'
+            && incoming().orderStatus == 'Pending Verification'
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'hasReceipt',
+              'receiptFileName',
+              'receiptPreviewDataUrl',
+              'paymentStatus',
+              'orderStatus',
+              'updatedAt'
+            ]))
+          ||
+          // Action 2: Customer cancels a non-shipped/non-completed order
+          (existing().orderStatus in ['Pending Payment', 'Pending Verification', 'Processing']
+            && incoming().orderStatus == 'Cancelled'
+            && incoming().paymentStatus == 'CANCELLED'
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'orderStatus',
+              'paymentStatus',
+              'updatedAt'
+            ]))
+        );
+
+      allow delete: if false;
+    }
+  }
+}

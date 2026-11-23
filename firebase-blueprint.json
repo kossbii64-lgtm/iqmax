@@ -1,0 +1,259 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private customer profile and saved delivery details stored per authenticated user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Authentication UID of the profile owner.",
+          "minLength": 6,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Customer full name.",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Customer email address.",
+          "minLength": 5,
+          "maxLength": 160
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Contact phone number.",
+          "maxLength": 30
+        },
+        "address": {
+          "type": "string",
+          "description": "Street delivery address.",
+          "maxLength": 300
+        },
+        "city": {
+          "type": "string",
+          "description": "City name.",
+          "maxLength": 80
+        },
+        "state": {
+          "type": "string",
+          "description": "Malaysian state name.",
+          "maxLength": 60
+        },
+        "postcode": {
+          "type": "string",
+          "description": "5-digit Malaysian postcode or empty string before completion.",
+          "maxLength": 10
+        },
+        "defaultRegion": {
+          "type": "string",
+          "enum": ["semenanjung", "sabah_sarawak"],
+          "description": "Preferred shipping region."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "userId",
+        "fullName",
+        "email",
+        "phoneNumber",
+        "address",
+        "city",
+        "state",
+        "postcode",
+        "defaultRegion",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order record containing package breakdown, shipping region, payment method, receipt reference, and fulfillment status.",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "description": "Document ID matching the Firestore order key.",
+          "minLength": 6,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reference": {
+          "type": "string",
+          "description": "Human-readable order reference number (e.g. IQM-202611-XXXX).",
+          "minLength": 6,
+          "maxLength": 40
+        },
+        "userId": {
+          "type": "string",
+          "description": "Authenticated user UID or 'guest' for unauthenticated guest checkouts.",
+          "minLength": 4,
+          "maxLength": 128
+        },
+        "isGuest": {
+          "type": "boolean",
+          "description": "Whether the order was placed in guest checkout mode."
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "customerPhone": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 30
+        },
+        "customerEmail": {
+          "type": "string",
+          "format": "email",
+          "minLength": 5,
+          "maxLength": 160
+        },
+        "address": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 300
+        },
+        "city": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "state": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "postcode": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 5,
+          "pattern": "^\\d{5}$"
+        },
+        "shippingRegion": {
+          "type": "string",
+          "enum": ["semenanjung", "sabah_sarawak"]
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["online_transfer", "cod"]
+        },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["PENDING VERIFICATION", "UNPAID (COD)", "VERIFIED", "CANCELLED"]
+        },
+        "orderStatus": {
+          "type": "string",
+          "enum": ["Pending Payment", "Pending Verification", "Processing", "Shipped", "Completed", "Cancelled"]
+        },
+        "items": {
+          "type": "array",
+          "description": "Bounded package line items in this order (1 to 10 lines)."
+        },
+        "totalPackages": {
+          "type": "number"
+        },
+        "totalPaidBottles": {
+          "type": "number"
+        },
+        "totalFreeBottles": {
+          "type": "number"
+        },
+        "totalBottles": {
+          "type": "number"
+        },
+        "totalTablets": {
+          "type": "number"
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "shippingFee": {
+          "type": "number"
+        },
+        "grandTotal": {
+          "type": "number"
+        },
+        "hasReceipt": {
+          "type": "boolean"
+        },
+        "receiptFileName": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "receiptPreviewDataUrl": {
+          "type": "string",
+          "maxLength": 350000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "orderId",
+        "reference",
+        "userId",
+        "isGuest",
+        "customerName",
+        "customerPhone",
+        "customerEmail",
+        "address",
+        "city",
+        "state",
+        "postcode",
+        "shippingRegion",
+        "paymentMethod",
+        "paymentStatus",
+        "orderStatus",
+        "items",
+        "totalPackages",
+        "totalPaidBottles",
+        "totalFreeBottles",
+        "totalBottles",
+        "totalTablets",
+        "subtotal",
+        "shippingFee",
+        "grandTotal",
+        "hasReceipt",
+        "receiptFileName",
+        "receiptPreviewDataUrl",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Private customer profile documents keyed by Firebase Auth UID."
+    },
+    "/orders/{orderId}": {
+      "schema": {
+        "$ref": "#/entities/Order"
+      },
+      "description": "Customer orders supporting signed-in ownership queries and strict guest-write isolation."
+    }
+  }
+}

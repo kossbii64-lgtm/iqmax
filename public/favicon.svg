@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="14" fill="#164A91" />
+  <!-- Winged L-cradle & diagonal rays matching YouEdu IQMAX+ mark -->
+  <path
+    d="M18 39V44C18 45.6569 19.3431 47 21 47H42C45.3137 47 48 44.3137 48 41V20"
+    stroke="#F5A623"
+    stroke-width="4.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M39 17V36C39 37.6569 37.6569 39 36 39H23"
+    stroke="#FFFFFF"
+    stroke-width="4.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path d="M29.5 16L33.5 29" stroke="#F5A623" stroke-width="3.6" stroke-linecap="round" />
+  <path d="M21 21L28.5 31" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" />
+  <path d="M16 28.5L26 33.5" stroke="#F5A623" stroke-width="3.4" stroke-linecap="round" />
+  <!-- Plus accent -->
+  <path d="M47 11V19M43 15H51" stroke="#F5A623" stroke-width="3.2" stroke-linecap="round" />
+</svg>

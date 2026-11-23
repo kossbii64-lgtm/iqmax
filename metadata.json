@@ -1,0 +1,6 @@
+{
+  "name": "YouEdu IQMAX+",
+  "description": "YouEdu IQMAX+ Chewable Nutritional Supplement — Focus Better. Learn Better. Perform Better. Academic E-Commerce Prototype.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
